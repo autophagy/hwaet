@@ -76,10 +76,14 @@ subscriptions _ =
     Sub.none
 
 
-view : Model -> Html Msg
-view model =
-    div []
-        (List.append
+
+-- VIEW
+
+
+controlsView : Model -> Html Msg
+controlsView model =
+    div [ Html.Attributes.id "controls" ]
+        [ div [ Html.Attributes.class "control" ]
             [ input
                 [ Html.Attributes.type_ "range"
                 , Html.Attributes.min "1"
@@ -88,7 +92,10 @@ view model =
                 , onInput UpdateParagraphs
                 ]
                 []
-            , input
+            , text <| "Paragraphs :: " ++ String.fromInt model.paragraphs
+            ]
+        , div [ Html.Attributes.class "control" ]
+            [ input
                 [ Html.Attributes.type_ "range"
                 , Html.Attributes.min "1"
                 , Html.Attributes.max "10"
@@ -96,6 +103,19 @@ view model =
                 , onInput UpdateSentences
                 ]
                 []
+            , text <| "Sentences :: " ++ String.fromInt model.sentences
             ]
-            (List.map (\y -> p [] [ text y ]) model.text)
-        )
+        ]
+
+
+textView : Model -> Html Msg
+textView model =
+    div [ Html.Attributes.id "text" ] (List.map (\y -> p [] [ text y ]) model.text)
+
+
+view : Model -> Html Msg
+view model =
+    div [ Html.Attributes.id "hwaet" ]
+        [ controlsView model
+        , textView model
+        ]
