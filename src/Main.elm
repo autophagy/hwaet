@@ -58,7 +58,17 @@ update msg model =
             update Gen { model | sentences = String.toInt v |> Maybe.withDefault 0 }
 
         NewText r ->
-            ( { model | text = List.map (\( a, _ ) -> String.join " " a) r }, Cmd.none )
+            ( { model | text = hwaet <| List.map (String.join " ") <| List.map Tuple.first r }, Cmd.none )
+
+
+hwaet : List String -> List String
+hwaet paragraphs =
+    case paragraphs of
+        [] ->
+            []
+
+        h :: t ->
+            ("Hwæt! " ++ h) :: t
 
 
 subscriptions : Model -> Sub Msg
