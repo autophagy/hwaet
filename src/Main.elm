@@ -32,12 +32,7 @@ type Msg
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    update Gen (Model [] 4 1)
-
-
-genParagraph : Int -> Random.Generator ( List String, List String )
-genParagraph sentences =
-    Random.List.choices sentences beowulf
+    update Gen (Model [] 3 2)
 
 
 genParagraphs : Int -> Int -> Random.Generator (List ( List String, List String ))
@@ -116,6 +111,7 @@ textView model =
 view : Model -> Html Msg
 view model =
     div [ Html.Attributes.id "hwaet" ]
-        [ controlsView model
+        [ h1 [] [ text "Hwæt :: Old English Lorem Ipsum" ]
+        , controlsView model
         , textView model
         ]
