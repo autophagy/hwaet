@@ -1,17 +1,18 @@
-module Main exposing (..)
+module Main exposing (main)
 
 import Beowulf exposing (beowulf)
-import Browser
-import Html exposing (..)
-import Html.Attributes
-import Html.Events exposing (..)
-import Random
-import Random.Extra
-import Random.List
+import Browser exposing (element)
+import Html exposing (Html, div, h1, input, p, text)
+import Html.Attributes as Attrs exposing (class, id, max, min, type_, value)
+import Html.Events exposing (onInput)
+import Random exposing (generate)
+import Random.Extra exposing (sequence)
+import Random.List exposing (choices)
+
 
 main : Program () Model Msg
 main =
-    Browser.element
+    element
         { init = init
         , update = update
         , subscriptions = subscriptions
@@ -45,11 +46,11 @@ update msg model =
         Gen ->
             let
                 genParagraphs =
-                    Random.List.choices model.sentences beowulf
+                    choices model.sentences beowulf
                         |> List.repeat model.paragraphs
-                        |> Random.Extra.sequence
+                        |> sequence
             in
-            ( model, Random.generate NewText genParagraphs )
+            ( model, generate NewText genParagraphs )
 
         Update t v ->
             let
@@ -93,24 +94,24 @@ view model =
     let
         controlsView : Html Msg
         controlsView =
-            div [ Html.Attributes.id "controls" ]
-                [ div [ Html.Attributes.class "control" ]
+            div [ id "controls" ]
+                [ div [ class "control" ]
                     [ input
-                        [ Html.Attributes.type_ "range"
-                        , Html.Attributes.min "1"
-                        , Html.Attributes.max "5"
-                        , Html.Attributes.value <| String.fromInt model.paragraphs
+                        [ type_ "range"
+                        , Attrs.min "1"
+                        , Attrs.max "5"
+                        , value <| String.fromInt model.paragraphs
                         , onInput <| Update Paragraphs
                         ]
                         []
                     , text <| "Paragraphs :: " ++ String.fromInt model.paragraphs
                     ]
-                , div [ Html.Attributes.class "control" ]
+                , div [ class "control" ]
                     [ input
-                        [ Html.Attributes.type_ "range"
-                        , Html.Attributes.min "1"
-                        , Html.Attributes.max "10"
-                        , Html.Attributes.value <| String.fromInt model.sentences
+                        [ type_ "range"
+                        , Attrs.min "1"
+                        , Attrs.max "10"
+                        , value <| String.fromInt model.sentences
                         , onInput <| Update Sentences
                         ]
                         []
@@ -120,9 +121,9 @@ view model =
 
         textView : Html Msg
         textView =
-            div [ Html.Attributes.id "text" ] (List.map (\y -> p [] [ text y ]) model.text)
+            div [ id "text" ] (List.map (\y -> p [] [ text y ]) model.text)
     in
-    div [ Html.Attributes.id "hwaet" ]
+    div [ id "hwaet" ]
         [ h1 [] [ text "Hwæt :: Old English Lorem Ipsum" ]
         , controlsView
         , textView
