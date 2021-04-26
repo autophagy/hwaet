@@ -9,7 +9,7 @@ import Random
 import Random.Extra
 import Random.List
 
-
+main : Program () Model Msg
 main =
     Browser.element
         { init = init
@@ -25,9 +25,13 @@ type alias Model =
 
 type Msg
     = Gen
-    | UpdateSentences String
-    | UpdateParagraphs String
+    | Update UpdateType String
     | NewText (List ( List String, List String ))
+
+
+type UpdateType
+    = Sentences
+    | Paragraphs
 
 
 init : () -> ( Model, Cmd Msg )
@@ -35,35 +39,48 @@ init _ =
     update Gen (Model [] 3 2)
 
 
-genParagraphs : Int -> Int -> Random.Generator (List ( List String, List String ))
-genParagraphs paragraphs sentences =
-    Random.Extra.sequence (List.repeat paragraphs (Random.List.choices sentences beowulf))
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Gen ->
-            ( model, Random.generate NewText (genParagraphs model.paragraphs model.sentences) )
+            let
+                genParagraphs =
+                    Random.List.choices model.sentences beowulf
+                        |> List.repeat model.paragraphs
+                        |> Random.Extra.sequence
+            in
+            ( model, Random.generate NewText genParagraphs )
 
-        UpdateParagraphs v ->
-            update Gen { model | paragraphs = String.toInt v |> Maybe.withDefault 0 }
+        Update t v ->
+            let
+                val =
+                    Maybe.withDefault 0 <| String.toInt v
 
-        UpdateSentences v ->
-            update Gen { model | sentences = String.toInt v |> Maybe.withDefault 0 }
+                newModel =
+                    case t of
+                        Sentences ->
+                            { model | sentences = val }
+
+                        Paragraphs ->
+                            { model | paragraphs = val }
+            in
+            update Gen newModel
 
         NewText r ->
-            ( { model | text = hwaet <| List.map (String.join " ") <| List.map Tuple.first r }, Cmd.none )
+            let
+                hwaet paragraphs =
+                    case paragraphs of
+                        [] ->
+                            []
 
+                        h :: t ->
+                            ("Hwæt! " ++ h) :: t
 
-hwaet : List String -> List String
-hwaet paragraphs =
-    case paragraphs of
-        [] ->
-            []
-
-        h :: t ->
-            ("Hwæt! " ++ h) :: t
+                flattenedPargraphs =
+                    List.map Tuple.first r
+                        |> List.map (String.join " ")
+            in
+            ( { model | text = hwaet <| flattenedPargraphs }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -71,47 +88,42 @@ subscriptions _ =
     Sub.none
 
 
-
--- VIEW
-
-
-controlsView : Model -> Html Msg
-controlsView model =
-    div [ Html.Attributes.id "controls" ]
-        [ div [ Html.Attributes.class "control" ]
-            [ input
-                [ Html.Attributes.type_ "range"
-                , Html.Attributes.min "1"
-                , Html.Attributes.max "5"
-                , Html.Attributes.value <| String.fromInt model.paragraphs
-                , onInput UpdateParagraphs
-                ]
-                []
-            , text <| "Paragraphs :: " ++ String.fromInt model.paragraphs
-            ]
-        , div [ Html.Attributes.class "control" ]
-            [ input
-                [ Html.Attributes.type_ "range"
-                , Html.Attributes.min "1"
-                , Html.Attributes.max "10"
-                , Html.Attributes.value <| String.fromInt model.sentences
-                , onInput UpdateSentences
-                ]
-                []
-            , text <| "Sentences :: " ++ String.fromInt model.sentences
-            ]
-        ]
-
-
-textView : Model -> Html Msg
-textView model =
-    div [ Html.Attributes.id "text" ] (List.map (\y -> p [] [ text y ]) model.text)
-
-
 view : Model -> Html Msg
 view model =
+    let
+        controlsView : Html Msg
+        controlsView =
+            div [ Html.Attributes.id "controls" ]
+                [ div [ Html.Attributes.class "control" ]
+                    [ input
+                        [ Html.Attributes.type_ "range"
+                        , Html.Attributes.min "1"
+                        , Html.Attributes.max "5"
+                        , Html.Attributes.value <| String.fromInt model.paragraphs
+                        , onInput <| Update Paragraphs
+                        ]
+                        []
+                    , text <| "Paragraphs :: " ++ String.fromInt model.paragraphs
+                    ]
+                , div [ Html.Attributes.class "control" ]
+                    [ input
+                        [ Html.Attributes.type_ "range"
+                        , Html.Attributes.min "1"
+                        , Html.Attributes.max "10"
+                        , Html.Attributes.value <| String.fromInt model.sentences
+                        , onInput <| Update Sentences
+                        ]
+                        []
+                    , text <| "Sentences :: " ++ String.fromInt model.sentences
+                    ]
+                ]
+
+        textView : Html Msg
+        textView =
+            div [ Html.Attributes.id "text" ] (List.map (\y -> p [] [ text y ]) model.text)
+    in
     div [ Html.Attributes.id "hwaet" ]
         [ h1 [] [ text "Hwæt :: Old English Lorem Ipsum" ]
-        , controlsView model
-        , textView model
+        , controlsView
+        , textView
         ]

@@ -1,5 +1,6 @@
 module Beowulf exposing (beowulf)
 
+-- src: https://www.poetryfoundation.org/poems/43521/beowulf-old-english-version
 
 beowulf : List String
 beowulf =
