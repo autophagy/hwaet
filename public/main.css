@@ -17,6 +17,18 @@ h1 {
   margin: 0em 0em 1em 0em;
 }
 
+a {
+    color: #070707;
+    border-bottom: 1px dashed #070707;
+    padding-bottom: 0px;
+    text-decoration: none;
+    transition: padding 0.25s;
+}
+
+a:hover {
+    padding-bottom: 2px;
+}
+
 #hwaet {
   padding: 2em;
   max-width: 1000px;
@@ -66,4 +78,8 @@ input[type=range]::-webkit-slider-thumb {
 
 input[type=range]:focus {
     outline: none;
+}
+
+#footer {
+  font-size: 0.8em;
 }

@@ -2,8 +2,8 @@ module Main exposing (main)
 
 import Beowulf exposing (beowulf)
 import Browser exposing (element)
-import Html exposing (Html, div, h1, input, p, text)
-import Html.Attributes as Attrs exposing (class, id, max, min, type_, value)
+import Html exposing (Html, a, div, h1, input, p, text)
+import Html.Attributes as Attrs exposing (class, href, id, type_, value)
 import Html.Events exposing (onInput)
 import Random exposing (generate)
 import Random.Extra exposing (sequence)
@@ -92,6 +92,10 @@ subscriptions _ =
 view : Model -> Html Msg
 view model =
     let
+        header : Html Msg
+        header =
+            h1 [] [ text "Hwæt :: Old English Lorem Ipsum" ]
+
         controlsView : Html Msg
         controlsView =
             div [ id "controls" ]
@@ -122,9 +126,14 @@ view model =
         textView : Html Msg
         textView =
             div [ id "text" ] (List.map (\y -> p [] [ text y ]) model.text)
+
+        footer : Html Msg
+        footer =
+            div [ id "footer" ] [ a [ href "https://github.com/autophagy/hwaet" ] [ text "src" ] ]
     in
     div [ id "hwaet" ]
-        [ h1 [] [ text "Hwæt :: Old English Lorem Ipsum" ]
+        [ header
         , controlsView
         , textView
+        , footer
         ]
