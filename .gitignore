@@ -5,3 +5,5 @@ repl-temp-*
 public/main.js
 deploy/terraform.tfvars
 deploy/.terraform*
+.direnv
+result
